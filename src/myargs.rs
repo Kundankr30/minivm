@@ -24,6 +24,4 @@ pub fn process_args(){
         }
 
     }
-
-        
  }
