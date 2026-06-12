@@ -1,3 +1,8 @@
+pub mod myargs;
+mod dis;
+mod asm;
+mod run;
+
 fn main() {
-    println!("Hello, world!");
+    myargs::process_args();
 }
