@@ -40,25 +40,25 @@ pub fn encode(op:Op) ->Vec<u8>{
 
     }
 }
-pub fn decode(bytes:&[u8],ip:usize) ->(Op,usize){
+pub fn decode(bytes:&[u8],ip:usize) ->Result<(Op,usize),String>{
     match bytes[ip]{
         0x01=>{
             let n = i64::from_le_bytes(bytes[ip+1..ip+9].try_into().unwrap());
-            (Op::Push(n),ip+9)
+            Ok((Op::Push(n),ip+9))
         }
-        0x02 => (Op::Pop,ip+1),
-        0x03 =>(Op::Dup,ip+1),
-        0x04 =>(Op::Swap,ip+1),
-        0x10 =>(Op::Add,ip+1),
-        0x11 =>(Op::Sub,ip+1),
-        0x12 =>(Op::Mul,ip+1),
-        0x13 =>(Op::Div,ip+1),
-        0x14 =>(Op::Mod,ip+1),
-        0x15 =>(Op::Neg,ip+1),
-        0x40 =>(Op::Load(bytes[ip+1]),ip+2),
-        0x41=>(Op::Store(bytes[ip+1]),ip+2),
-        0x60 =>(Op::Print,ip+1),
-        0xFF => (Op::Halt,ip+1),
+        0x02 => Ok((Op::Pop,ip+1)),
+        0x03 =>Ok((Op::Dup,ip+1)),
+        0x04 =>Ok((Op::Swap,ip+1)),
+        0x10 =>Ok((Op::Add,ip+1)),
+        0x11 =>Ok((Op::Sub,ip+1)),
+        0x12 =>Ok((Op::Mul,ip+1)),
+        0x13 =>Ok((Op::Div,ip+1)),
+        0x14 =>Ok((Op::Mod,ip+1)),
+        0x15 =>Ok((Op::Neg,ip+1)),
+        0x40 =>Ok((Op::Load(bytes[ip+1]),ip+2)),
+        0x41=>Ok((Op::Store(bytes[ip+1]),ip+2)),
+        0x60 =>Ok((Op::Print,ip+1)),
+        0xFF =>Ok((Op::Halt,ip+1)),
         other => panic!("unknown opcode: 0x{:02X} at ip={}", other, ip),
     }
 }

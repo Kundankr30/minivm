@@ -19,7 +19,7 @@ pub fn process_args(){
             
         }
         "dis" =>{
-            println!("Disassembler Mode");
+           // println!("Disassembler Mode");
             super::dis::disassemble(file);
         }
         other=>{
