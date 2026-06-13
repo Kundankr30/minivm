@@ -1,7 +1,7 @@
 use std::convert::TryInto;
 use crate::isa;
 
-pub fn run(file:&str){
+pub fn run(file:&str,trace:bool){
     let bytes = std::fs::read(file).expect("could not read file");
     if &bytes[0..4]!=&[0x4D,0x56,0x4D,0x00]{
         eprintln!("Error:Invalid tbc file");
@@ -18,6 +18,9 @@ pub fn run(file:&str){
     let mut ip = 0;
     loop{
         let (op,new_ip) = isa::decode(code, ip);
+        if trace{
+            println!("ip=0x{:04X} {:?} stack:{:?}",ip,op,stack);
+        }
         ip = new_ip;
         match op{
             isa::Op::Push(n) =>stack.push(n),

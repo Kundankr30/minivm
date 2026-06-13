@@ -12,8 +12,11 @@ pub fn process_args(){
             super::asm::assemble(file);
         }
         "run" =>{
-            println!("VM Mode");
-            super::run::run(file);
+            //println!("VM Mode");
+            //super::run::run(file);
+            let trace = myargs.iter().any(|a| a == "--trace");
+            super::run::run(file, trace);
+            
         }
         "dis" =>{
             println!("Disassembler Mode");
