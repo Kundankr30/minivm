@@ -5,6 +5,7 @@ mod run;
 mod isa;
 mod vm;
 
-fn main() {
-    myargs::process_args();
+fn main() -> Result<(), String> {
+    myargs::process_args()?;
+    Ok(())
 }

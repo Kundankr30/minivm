@@ -1,6 +1,6 @@
 use std::fs;
 use crate::isa;
-pub fn assemble(file:&str){
+pub fn assemble(file:&str)->Result<(),String>{
     let contents = fs::read_to_string(file).expect("Count not real file");
     let mut code: Vec<u8> = Vec::new();
     for line in contents.lines(){
@@ -23,7 +23,8 @@ pub fn assemble(file:&str){
     output.extend_from_slice(&code);
     let out_file = file.replace(".tasm", ".tbc");
     fs::write(&out_file, &output).expect("could not write file");
-    println!("written to {}", out_file)
+    println!("written to {}", out_file);
+    Ok(())
 
 }
 fn parse_line(line:&str) ->crate::isa::Op{

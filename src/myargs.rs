@@ -1,30 +1,27 @@
 use std::env::args;
-pub fn process_args(){
-    let myargs:Vec<String>= args().collect();
-    if myargs.len()<2{
-        print!("asm,run,dis expected");
-        return;
+
+pub fn process_args() -> Result<(), String> {
+    let myargs: Vec<String> = args().collect();
+    if myargs.len() < 3 {
+        return Err("Usage: <asm|run|dis> <file>".to_string());
     }
     let file = myargs[2].as_str();
-    match myargs[1].as_str(){
+
+    match myargs[1].as_str() {
         "asm" => {
             println!("Assembler Mode");
-            super::asm::assemble(file);
+            super::asm::assemble(file)?;
         }
-        "run" =>{
-            //println!("VM Mode");
-            //super::run::run(file);
+        "run" => {
             let trace = myargs.iter().any(|a| a == "--trace");
-            super::run::run(file, trace);
-            
+            super::run::run(file, trace)?;
         }
-        "dis" =>{
-           // println!("Disassembler Mode");
-            super::dis::disassemble(file);
+        "dis" => {
+            super::dis::disassemble(file)?;
         }
-        other=>{
-            println!("Unknown command:{}",other)
+        other => {
+            return Err(format!("Unknown command: {}", other));
         }
-
     }
- }
+    Ok(())
+}

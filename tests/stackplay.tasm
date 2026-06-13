@@ -1,0 +1,11 @@
+; a^2 + b^2 for a=12, b=35
+; each input pushed exactly once using DUP
+PUSH 12
+DUP
+MUL
+PUSH 35
+DUP
+MUL
+ADD
+PRINT
+HALT
