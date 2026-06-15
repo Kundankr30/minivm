@@ -1,0 +1,4 @@
+; trap: stack underflow
+; POP on empty stack
+POP
+HALT

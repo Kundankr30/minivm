@@ -29,7 +29,11 @@ pub fn run(file: &str, trace: bool) -> Result<(), String> {
         match op {
             isa::Op::Push(n) => stack.push(n),
             isa::Op::Pop => {
-                stack.pop();
+                //tack.pop();
+                match stack.pop() {
+                    Some(_) => {},
+                    None => return Err(format!("trap at ip=0x{:04X}: stack underflow", ip)),
+                }
             }
             isa::Op::Dup => {
                 let top = *stack.last().unwrap();
@@ -59,11 +63,17 @@ pub fn run(file: &str, trace: bool) -> Result<(), String> {
             isa::Op::Div => {
                 let b = stack.pop().unwrap();
                 let a = stack.pop().unwrap();
+                if b==0{
+                    return Err(format!("trap at ip=0x{:04X}: division by zero", ip));
+                }
                 stack.push(a / b);
             }
             isa::Op::Mod => {
                 let b = stack.pop().unwrap();
                 let a = stack.pop().unwrap();
+                if b == 0 {
+                    return Err(format!("trap at ip=0x{:04X}: modulo by zero", ip));
+                }
                 stack.push(a % b);
             }
             isa::Op::Neg => {
