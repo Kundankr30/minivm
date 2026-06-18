@@ -1,4 +1,4 @@
-use std::convert::TryInto;
+use std::{convert::TryInto};
 use crate::isa;
 
 pub fn run(file: &str, trace: bool) -> Result<(), String> {
@@ -27,7 +27,12 @@ pub fn run(file: &str, trace: bool) -> Result<(), String> {
         }
         ip = new_ip;
         match op {
-            isa::Op::Push(n) => stack.push(n),
+            isa::Op::Push(n) => {
+                if stack.len()>=1024{
+                    return Err(format!("trap at ip=0x{:04X}:stack overflow (stack full)",ip));
+                }
+                stack.push(n);
+            }
             isa::Op::Pop => {
                 //tack.pop();
                 match stack.pop() {
@@ -40,59 +45,65 @@ pub fn run(file: &str, trace: bool) -> Result<(), String> {
                 stack.push(top);
             }
             isa::Op::Swap => {
-                let a = stack.pop().unwrap();
-                let b = stack.pop().unwrap();
+                let a = safe_pop(&mut stack,ip)?;
+                let b = safe_pop(&mut stack,ip)?;
                 stack.push(a);
                 stack.push(b);
             }
             isa::Op::Add => {
-                let b = stack.pop().unwrap();
-                let a = stack.pop().unwrap();
+                let b = safe_pop(&mut stack,ip)?;
+                let a = safe_pop(&mut stack,ip)?;
                 stack.push(a + b);
             }
             isa::Op::Sub => {
-                let b = stack.pop().unwrap();
-                let a = stack.pop().unwrap();
+                let b = safe_pop(&mut stack,ip)?;
+                let a = safe_pop(&mut stack,ip)?;
                 stack.push(a - b);
             }
             isa::Op::Mul => {
-                let b = stack.pop().unwrap();
-                let a = stack.pop().unwrap();
+                let b = safe_pop(&mut stack,ip)?;
+                let a = safe_pop(&mut stack,ip)?;
                 stack.push(a * b);
             }
             isa::Op::Div => {
-                let b = stack.pop().unwrap();
-                let a = stack.pop().unwrap();
+                let b = safe_pop(&mut stack,ip)?;
+                let a = safe_pop(&mut stack,ip)?;
                 if b==0{
                     return Err(format!("trap at ip=0x{:04X}: division by zero", ip));
                 }
                 stack.push(a / b);
             }
             isa::Op::Mod => {
-                let b = stack.pop().unwrap();
-                let a = stack.pop().unwrap();
+                let b = safe_pop(&mut stack,ip)?;
+                let a = safe_pop(&mut stack,ip)?;
                 if b == 0 {
                     return Err(format!("trap at ip=0x{:04X}: modulo by zero", ip));
                 }
                 stack.push(a % b);
             }
             isa::Op::Neg => {
-                let a = stack.pop().unwrap();
+                let a = safe_pop(&mut stack,ip)?;
                 stack.push(-a);
             }
             isa::Op::Load(s) => {
                 stack.push(globals[s as usize]);
             }
             isa::Op::Store(s) => {
-                let a = stack.pop().unwrap();
+                let a = safe_pop(&mut stack,ip)?;
                 globals[s as usize] = a;
             }
             isa::Op::Print => {
-                let ans = stack.pop().unwrap();
+                let ans = safe_pop(&mut stack,ip)?;
                 println!("{}", ans);
             }
             isa::Op::Halt => break,
         }
     }
     Ok(())
+}
+ fn safe_pop(stack:&mut Vec<i64>,ip:usize) ->Result<i64,String>{
+        match stack.pop(){
+            Some(v) =>Ok(v),
+            None => return Err(format!("trap at ip=0x{:04X}:stack underflow",ip)),
+        }
 }
