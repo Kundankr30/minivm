@@ -2,8 +2,7 @@ use crate::isa;
 use std::convert::TryInto;
 
 pub fn disassemble(file: &str) -> Result<(), String> {
-    let bytes = std::fs::read(file)
-        .map_err(|e| format!("Could not read file: {}", e))?;
+    let bytes = std::fs::read(file).map_err(|e| format!("Could not read file: {}", e))?;
 
     if &bytes[0..4] != &[0x4D, 0x56, 0x4D, 0x00] {
         return Err("not a valid .tbc file".to_string());
@@ -48,5 +47,11 @@ fn op_to_string(op: isa::Op) -> String {
         isa::Op::Store(s) => format!("STORE {}", s),
         isa::Op::Print => "PRINT".to_string(),
         isa::Op::Halt => "HALT".to_string(),
+        isa::Op::EQ => "EQ".to_string(),
+        isa::Op::LT => "LT".to_string(),
+        isa::Op::GT => "GT".to_string(),
+        isa::Op::JMP(addr) => format!("JMP {}", addr),
+        isa::Op::JZ(addr) => format!("JZ {}", addr),
+        isa::Op::JNZ(addr) => format!("JNZ {}", addr),
     }
 }
