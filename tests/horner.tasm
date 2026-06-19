@@ -1,0 +1,22 @@
+; 3x^3 + 2x^2 + 5x + 7 at x=11
+; Horner: ((3x + 2)x + 5)x + 7
+; x stored in global slot 0
+
+PUSH 11
+STORE 0
+
+PUSH 3
+LOAD 0
+MUL
+PUSH 2
+ADD
+LOAD 0
+MUL
+PUSH 5
+ADD
+LOAD 0
+MUL
+PUSH 7
+ADD
+PRINT
+HALT
